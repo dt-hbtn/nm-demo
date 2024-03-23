@@ -62,7 +62,7 @@ file_error:
 }
 
 /**
- * SymbolReader_ProcessAll - Sequentially performs `action` on all symbols
+ * SymbolReader_ProcessSymbols - Sequentially performs `action` on all symbols
  * @reader: Pointer to `SymbolReader` structure
  * @action: Pointer to symbol-processing function
  * @filter: Pointer to optional filter function, symbol processed when true
@@ -79,9 +79,13 @@ SymbolReader_ProcessSymbols(SymbolReader *reader, sym_action_t action,
 	if (!filter)
 		filter = dummy_filter;
 
+	/* iterate over the symbol table entries */
 	for (i = 0; i < reader->sym_count; ++i) {
-		if (filter(reader, reader->sym_table + i))
+		/* skip symbol if `filter` returns false */
+		if (filter(reader, reader->sym_table + i)) {
+			/* process symbol with `action` */
 			action(reader, reader->sym_table + i);
+		}
 	}
 }
 
